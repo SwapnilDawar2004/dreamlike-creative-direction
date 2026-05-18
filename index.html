@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>dreamlike — creative direction</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* ═══════════════════════════════════════════════
+       DUAL REALITY SYSTEM
+       body.archive = The Archive (renaissance, daylight, manuscript)
+       body.shrine  = The Shrine  (nocturnal, sacred, signal)
+       ═══════════════════════════════════════════════ */
+
+    :root {
+      --serif: 'Instrument Serif', Georgia, serif;
+      --sans: 'Inter', -apple-system, sans-serif;
+      --blue: #16b8f3;
+      --turquoise: #0ed2c9;
+      --transition-duration: 1.8s;
+      --transition-ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    /* ── ARCHIVE PALETTE ── */
+    /* Dune/Arrival/Your Name: sacred warmth, fog-light, transient beauty */
+    body.archive {
+      --bg: #f5f0e8;
+      --bg-secondary: #ede7db;
+      --text: #1a1714;
+      --muted: #8a7e6e;
+      --accent: #16b8f3;
+      --border: rgba(0,0,0,0.06);
+      --border-strong: rgba(0,0,0,0.08);
+      --vignette: rgba(245,240,232,0.6);
+      --nav-bg: rgba(245,240,232,0.85);
+      --caption-color: #fff;
+      --overlay-top: #f5f0e8;
+      --ghost-text: rgba(0,0,0,0.025);
+      --grain-opacity: 0.03;
+      --selection-bg: var(--blue);
+      --selection-text: #fff;
+      --fog-color: rgba(245,240,232,0.4);
+      --glow-color: rgba(22,184,243,0.03);
+      --atmosphere-blend: rgba(210,195,170,0.08);
+    }
+
+    /* ── SHRINE PALETTE ── */
+    /* Blade Runner/Evangelion/GITS: wet darkness, neon isolation, signal */
+    body.shrine {
+      --bg: #0a0807;
+      --bg-secondary: #12100e;
+      --text: #d4cec4;
+      --muted: #6a6258;
+      --accent: #c4342f;
+      --border: rgba(255,255,255,0.04);
+      --border-strong: rgba(255,255,255,0.06);
+      --vignette: rgba(10,8,7,0.7);
+      --nav-bg: rgba(10,8,7,0.85);
+      --caption-color: #d4cec4;
+      --overlay-top: #0a0807;
+      --ghost-text: rgba(255,255,255,0.02);
+      --grain-opacity: 0.055;
+      --selection-bg: #c4342f;
+      --selection-text: #0a0807;
+      --fog-color: rgba(10,8,7,0.6);
+      --glow-color: rgba(196,52,47,0.04);
+      --atmosphere-blend: rgba(196,52,47,0.03);
+    }
+
+    /* ── BASE TRANSITIONS ── */
+    html {
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      transition:
+        background var(--transition-duration) var(--transition-ease),
+        color var(--transition-duration) var(--transition-ease);
+    }
+
+    ::selection {
+      background: var(--selection-bg);
+      color: var(--selection-text);
+    }
+
+    /* ── GRAIN ── */
+    .grain {
+      position: fixed; inset: -50%;
+      width: 200%; height: 200%;
+      pointer-events: none; z-index: 9999;
+      opacity: var(--grain-opacity);
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      animation: grain 0.5s steps(1) infinite;
+      transition: opacity var(--transition-duration) var(--transition-ease);
+    }
+
+    @keyframes grain {
+      0% { transform: translate(0,0); }
+      25% { transform: translate(-2%,-3%); }
+      50% { transform: translate(3%,1%); }
+      75% { transform: translate(-1%,4%); }
+    }
+
+    /* ── ATMOSPHERIC LAYERS ── */
+    /* Arrival: fog as emotion. Blade Runner: ambient glow as loneliness */
+    .atmosphere {
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 9997;
+      transition: opacity var(--transition-duration) var(--transition-ease);
+    }
+
+    .atmosphere-fog {
+      background: linear-gradient(
+        180deg,
+        var(--fog-color) 0%,
+        transparent 30%,
+        transparent 70%,
+        var(--fog-color) 100%
+      );
+      opacity: 1;
+    }
+
+    .atmosphere-glow {
+      background: radial-gradient(
+        ellipse at 50% 40%,
+        var(--glow-color) 0%,
+        transparent 70%
+      );
+      opacity: 1;
+    }
+
+    /* Shrine: GITS scan-line surveillance texture */
+    .atmosphere-scanlines {
+      opacity: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(255,255,255,0.008) 2px,
+        rgba(255,255,255,0.008) 4px
+      );
+      transition: opacity var(--transition-duration) var(--transition-ease);
+    }
+
+    body.shrine .atmosphere-scanlines { opacity: 1; }
+    body.archive .atmosphere-scanlines { opacity: 0; }
+
+    /* Shrine: Blade Runner amber horizon line */
+    .atmosphere-horizon {
+      opacity: 0;
+      background: linear-gradient(
+        180deg,
+        transparent 45%,
+        rgba(196,52,47,0.015) 50%,
+        transparent 55%
+      );
+      transition: opacity var(--transition-duration) var(--transition-ease);
+    }
+
+    body.shrine .atmosphere-horizon { opacity: 1; }
+
+    /* ── CINEMATIC VIGNETTE — both realities get equal depth ── */
+    body.archive::after {
+      content: '';
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 9996;
+      background: radial-gradient(ellipse at center, transparent 50%, rgba(210,195,170,0.2) 100%);
+    }
+
+    body.shrine::after {
+      content: '';
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 9996;
+      background: radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,0.3) 100%);
+    }
+
+    /* ── CONSCIOUSNESS TOGGLE (cursor-following hint) ── */
+    .reality-hint {
+      position: fixed;
+      z-index: 200;
+      font-family: var(--serif);
+      font-size: 0.6rem;
+      font-style: italic;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      opacity: 1;
+      pointer-events: none;
+      user-select: none;
+      white-space: nowrap;
+      transform: translate(15px, 15px);
+      transition: color var(--transition-duration) var(--transition-ease);
+    }
+
+    body.archive .reality-hint::after { content: 'double-click to enter the night'; }
+    body.shrine .reality-hint::after { content: 'double-click to return to the day'; }
+
+    @media (max-width: 768px) {
+      body.archive .reality-hint::after { content: 'double-tap to enter the night'; }
+      body.shrine .reality-hint::after { content: 'double-tap to return to the day'; }
+      .reality-hint { position: fixed; bottom: 1.5rem; right: 1.5rem; left: auto; top: auto; transform: none; opacity: 1; }
+    }
+
+    /* ── TRANSITION VEIL ── */
+    .transition-veil {
+      position: fixed;
+      inset: 0;
+      z-index: 9998;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+
+    .transition-veil.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    body.archive .transition-veil { background: #0a0807; }
+    body.shrine .transition-veil { background: #f5f0e8; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 1.5rem 3rem;
+      display: flex; justify-content: space-between; align-items: center;
+      background: var(--nav-bg);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      transition:
+        background var(--transition-duration) var(--transition-ease),
+        border-color var(--transition-duration) var(--transition-ease);
+    }
+
+    nav .logo {
+      font-family: var(--serif); font-size: 1.2rem;
+      color: var(--text); font-style: italic;
+      transition: color var(--transition-duration) var(--transition-ease);
+    }
+
+    nav .nav-links { display: flex; gap: 2.2rem; list-style: none; }
+
+    nav .nav-links a {
+      color: var(--text); text-decoration: none; font-size: 0.65rem;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      transition: color 0.3s;
+    }
+
+    nav .nav-links a:hover { color: var(--accent); }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      height: 250vh;
+      overflow: hidden;
+    }
+
+    .hero-sticky {
+      position: sticky; top: 0;
+      height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+
+    .hero-bg-word {
+      position: absolute;
+      font-family: var(--serif);
+      font-size: clamp(12rem, 25vw, 22rem);
+      font-style: italic;
+      color: var(--ghost-text);
+      white-space: nowrap;
+      pointer-events: none;
+      will-change: transform;
+      transition: color var(--transition-duration) var(--transition-ease);
+    }
+
+    .hero-bg-word.top { top: 5%; left: -5%; }
+    .hero-bg-word.bottom { bottom: 5%; right: -5%; }
+
+    /* Archive bg words */
+    body.archive .hero-bg-word.shrine-word { display: none; }
+    body.shrine .hero-bg-word.archive-word { display: none; }
+
+    .hero-float-img {
+      position: absolute;
+      object-fit: cover;
+      border: 1px solid var(--border);
+      will-change: transform, opacity;
+      opacity: 0;
+      transition:
+        opacity 1.2s ease,
+        border-color var(--transition-duration) var(--transition-ease);
+    }
+
+    .hero-float-img.loaded { opacity: 1; }
+
+    /* Archive images visible in archive, shrine images in shrine */
+    body.archive .hero-float-img.for-shrine { opacity: 0 !important; pointer-events: none; }
+    body.shrine .hero-float-img.for-archive { opacity: 0 !important; pointer-events: none; }
+
+    .hero-float-img.f1 { width: 180px; height: 240px; top: 8%; left: 6%; }
+    .hero-float-img.f2 { width: 140px; height: 180px; top: 12%; right: 8%; }
+    .hero-float-img.f3 { width: 200px; height: 150px; bottom: 15%; left: 10%; }
+    .hero-float-img.f4 { width: 160px; height: 210px; bottom: 10%; right: 6%; }
+    .hero-float-img.f5 { width: 120px; height: 160px; top: 40%; left: 22%; }
+    .hero-float-img.f6 { width: 150px; height: 120px; top: 35%; right: 20%; }
+
+    .hero-center {
+      position: relative; z-index: 10;
+      text-align: center;
+      will-change: transform, opacity;
+    }
+
+    .hero-center h1 {
+      font-family: var(--serif);
+      font-size: clamp(3rem, 8vw, 7rem);
+      font-weight: 400; line-height: 1.08;
+      letter-spacing: -0.02em; margin-bottom: 1rem;
+      transition: color var(--transition-duration) var(--transition-ease);
+    }
+
+    .hero-center h1 em {
+      font-style: italic;
+      color: var(--accent);
+      transition: color var(--transition-duration) var(--transition-ease);
+    }
+
+    .hero-center .subtitle {
+      font-size: 0.7rem; letter-spacing: 0.25em;
+      text-transform: uppercase; color: var(--muted);
+      transition: color var(--transition-duration) var(--transition-ease);
+    }
+
+    /* Subtitle is unified across realities */
+
+    .hero-vignette {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at center, transparent 40%, var(--vignette) 100%);
+      pointer-events: none; z-index: 5;
+      transition: background var(--transition-duration) var(--transition-ease);
+    }
+
+    .scroll-indicator {
+      position: absolute; bottom: 3rem; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+      color: var(--muted); font-size: 0.6rem;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      transition: color var(--transition-duration) var(--transition-ease);
+    }
+
+    .scroll-indicator .line {
+      width: 1px; height: 40px;
+      background: linear-gradient(to bottom, var(--muted), transparent);
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 0.8; }
+    }
+
+    /* ── SHARED SECTION STYLES ── */
+    .section-label {
+      font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 3rem;
+      display: flex; align-items: center; gap: 1.5rem;
+      transition: color var(--transition-duration) var(--transition-ease);
+    }
+
+    .section-label::after {
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(to right, color-mix(in srgb, var(--accent) 25%, transparent), transparent);
+    }
+
+    .divider {
+      width: 100%; max-width: 1100px; margin: 0 auto;
+      height: 1px; background: var(--border);
+      transition: background var(--transition-duration) var(--transition-ease);
+    }
+
+    .divider-ornament {
+      text-align: center; padding: 1.5rem 0;
+      font-family: var(--serif); font-size: 1.2rem;
+      color: var(--ghost-text); letter-spacing: 0.4em;
+      transition: color var(--transition-duration) var(--transition-ease);
+    }
+
+    /* Shrine replaces ornaments with different symbols */
+    body.archive .ornament-shrine { display: none; }
+    body.shrine .ornament-archive { display: none; }
+
+    /* ── ART STICKY SEQUENCE ── */
+    .art-sequence { position: relative; height: 500vh; }
+
+    .art-sequence-sticky {
+      position: sticky; top: 0; height: 100vh;
+      display: flex; align-items: center; overflow: hidden;
+    }
+
+    .art-sequence-content {
+      max-width: 550px; padding: 0 3rem;
+      position: relative; z-index: 10;
+    }
+
+    .art-sequence-content .art-word {
+      font-family: var(--serif);
+      font-size: clamp(3rem, 7vw, 6rem);
+      font-weight: 400; font-style: italic;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+      will-change: transform, opacity;
+      transition: color var(--transition-duration) var(--transition-ease);
+    }
+
+    .art-sequence-content .art-text {
+      font-size: 1rem; line-height: 1.9;
+      color: var(--muted); font-weight: 300;
+      will-change: opacity;
+      transition: color var(--transition-duration) var(--transition-ease);
+    }
+
+    .art-sequence-content .art-text strong {
+      color: var(--text); font-weight: 500;
+      transition: color var(--transition-duration) var(--transition-ease);
+    }
+
+    .art-sequence-visuals {
+      position: absolute; top: 0; right: 0;
+      width: 50%; height: 100%; overflow: hidden;
+    }
+
+    .art-visual-layer {
+      position: absolute; width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.8s ease;
+      will-change: opacity, transform;
+    }
+
+    .art-visual-layer.active { opacity: 1; }
+
+    .art-visual-layer img {
+      max-width: 80%; max-height: 75vh; object-fit: cover;
+      border: 1px solid var(--border);
+      transition: border-color var(--transition-duration) var(--transition-ease);
+    }
+
+    /* Different visuals per reality */
+    body.archive .art-visual-layer.for-shrine { display: none; }
+    body.shrine .art-visual-layer.for-archive { display: none; }
+
+    /* ── PHILOSOPHY ── */
+    .philosophy {
+      padding: 12rem 3rem; text-align: center;
+      position: relative; overflow: hidden;
+    }
+
+    .philosophy .big-text {
+      font-family: var(--serif);
+      font-size: clamp(2.2rem, 5.5vw, 4.5rem);
+      font-weight: 400; line-height: 1.25;
+      max-width: 850px; margin: 0 auto;
+      will-change: transform;
+      transition: color var(--transition-duration) var(--transition-ease);
+    }
+
+    .philosophy .big-text em {
+      font-style: italic; color: var(--accent);
+      transition: color var(--transition-duration) var(--transition-ease);
+    }
+
+    .philosophy .bg-float {
+      position: absolute; object-fit: cover;
+      opacity: 0.08; will-change: transform;
+      pointer-events: none;
+      transition: opacity var(--transition-duration) var(--transition-ease);
+    }
+
+    body.shrine .philosophy .bg-float { opacity: 0.12; }
+
+    .philosophy .bg-float.left { width: 300px; height: 400px; left: -60px; top: 20%; }
+    .philosophy .bg-float.right { width: 250px; height: 350px; right: -40px; bottom: 10%; }
+
+    body.archive .bg-float.for-shrine { display: none; }
+    body.shrine .bg-float.for-archive { display: none; }
+
+    /* ── SKILLS ── */
+    .skills-section { padding: 7rem 3rem; max-width: 1100px; margin: 0 auto; }
+
+    .skills-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 0; margin-top: 2rem;
+      border: 1px solid var(--border-strong);
+      transition: border-color var(--transition-duration) var(--transition-ease);
+    }
+
+    .skill-cell {
+      padding: 3rem 1.5rem; text-align: center;
+      transition: all 0.4s ease;
+      cursor: default;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .skill-cell:nth-child(3n) { border-right: none; }
+    .skill-cell:nth-child(n+4) { border-bottom: none; }
+
+    body.archive .skill-cell:hover { background: rgba(22,184,243,0.04); }
+    body.shrine .skill-cell:hover { background: rgba(196,52,47,0.06); }
+
+    .skill-cell .skill-name {
+      font-family: var(--serif); font-size: 1.5rem;
+      font-style: italic; margin-bottom: 0.5rem;
+      transition: color var(--transition-duration) var(--transition-ease);
+    }
+
+    .skill-cell .skill-sub {
+      font-size: 0.6rem; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--muted);
+      transition: color var(--transition-duration) var(--transition-ease);
+    }
+
+    .art-reflection {
+      margin-top: 3.5rem; font-size: 0.95rem;
+      line-height: 1.9; color: var(--muted);
+      max-width: 600px; font-weight: 300;
+      transition: color var(--transition-duration) var(--transition-ease);
+    }
+
+    .art-reflection strong {
+      color: var(--text); font-weight: 500;
+      transition: color var(--transition-duration) var(--transition-ease);
+    }
+
+    /* ── CINEMATIC BREAK ── */
+    .cinematic-break {
+      position: relative; height: 80vh;
+      overflow: hidden; display: flex;
+      align-items: center; justify-content: center;
+    }
+
+    .cinematic-break img {
+      position: absolute; width: 100%; height: 120%;
+      object-fit: cover; will-change: transform;
+    }
+
+    body.archive .cinematic-break .for-shrine { display: none; }
+    body.shrine .cinematic-break .for-archive { display: none; }
+
+    .cinematic-break .overlay {
+      position: absolute; inset: 0; z-index: 2;
+      background: linear-gradient(to bottom, var(--overlay-top), transparent 25%, transparent 75%, var(--overlay-top));
+      transition: background var(--transition-duration) var(--transition-ease);
+    }
+
+    .cinematic-break .caption {
+      position: relative; z-index: 3;
+      font-family: var(--serif);
+      font-size: clamp(1.5rem, 4vw, 3rem);
+      font-style: italic;
+      color: var(--caption-color);
+      text-shadow: 0 2px 30px rgba(0,0,0,0.4);
+      text-align: center; max-width: 600px; padding: 0 2rem;
+      transition: color var(--transition-duration) var(--transition-ease);
+    }
+
+    /* ── INSPIRATIONS ── */
+    .inspirations { padding: 7rem 3rem; max-width: 1100px; margin: 0 auto; }
+
+    .inspiration-item {
+      display: grid; grid-template-columns: 70px 1fr;
+      gap: 2.5rem; padding: 3rem 0;
+      border-bottom: 1px solid var(--border);
+      align-items: start;
+      transition: border-color var(--transition-duration) var(--transition-ease);
+    }
+
+    .inspiration-item:first-of-type {
+      border-top: 1px solid var(--border);
+    }
+
+    .inspiration-number {
+      font-family: var(--serif); font-size: 2.5rem;
+      font-style: italic; color: var(--accent);
+      opacity: 0.25; line-height: 1;
+      transition: color var(--transition-duration) var(--transition-ease);
+    }
+
+    .inspiration-content h3 {
+      font-family: var(--serif); font-size: 1.7rem;
+      font-weight: 400; margin-bottom: 0.3rem;
+    }
+
+    .inspiration-content h3 a {
+      color: var(--text); text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .inspiration-content h3 a:hover { color: var(--accent); }
+
+    .inspiration-role {
+      font-size: 0.65rem; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--muted);
+      margin-bottom: 1.2rem;
+      transition: color var(--transition-duration) var(--transition-ease);
+    }
+
+    .inspiration-role a {
+      color: #16b8f3; text-decoration: none;
+      transition: opacity 0.3s;
+    }
+
+    .inspiration-role a:hover { opacity: 0.7; }
+
+    .inspiration-text {
+      font-size: 0.9rem; line-height: 1.8;
+      color: var(--muted); font-weight: 300; max-width: 560px;
+      transition: color var(--transition-duration) var(--transition-ease);
+    }
+
+    .inspiration-blend {
+      margin-top: 1rem; font-size: 0.85rem;
+      font-style: normal; font-family: var(--sans);
+      transition: color var(--transition-duration) var(--transition-ease);
+    }
+
+    .inspiration-blend { color: #16b8f3; }
+
+    /* ── GALLERY ── */
+    .gallery-section { padding: 7rem 0 4rem; }
+
+    .gallery-grid {
+      columns: 3; column-gap: 10px;
+      padding: 0 3rem; max-width: 1100px; margin: 0 auto;
+    }
+
+    .gallery-grid img {
+      width: 100%; display: block; margin-bottom: 10px;
+      border: 1px solid var(--border);
+      transition:
+        transform 0.5s ease, opacity 0.5s ease,
+        border-color var(--transition-duration) var(--transition-ease);
+    }
+
+    .gallery-grid img:hover { transform: scale(1.02); opacity: 0.9; }
+
+    /* Gallery split per reality */
+    body.archive .gallery-grid img.for-shrine { display: none; }
+    body.shrine .gallery-grid img.for-archive { display: none; }
+
+    /* ── EXPRESSION ── */
+    .expression { padding: 8rem 3rem; max-width: 1100px; margin: 0 auto; }
+
+    .video-container {
+      position: relative; width: 100%; aspect-ratio: 16/9;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-strong);
+      margin-top: 3rem;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      transition:
+        background var(--transition-duration) var(--transition-ease),
+        border-color var(--transition-duration) var(--transition-ease);
+    }
+
+    .video-container .placeholder-text {
+      font-family: var(--serif); font-size: 1.2rem;
+      font-style: italic; color: var(--muted);
+      transition: color var(--transition-duration) var(--transition-ease);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 5rem 3rem 3rem; max-width: 1100px;
+      margin: 0 auto; display: flex;
+      justify-content: space-between; align-items: flex-end;
+      border-top: 1px solid var(--border);
+      transition: border-color var(--transition-duration) var(--transition-ease);
+    }
+
+    footer .footer-left {
+      font-family: var(--serif); font-size: 1.5rem; font-style: italic;
+    }
+
+    footer .footer-left a {
+      color: var(--accent); text-decoration: none;
+      transition: color var(--transition-duration) var(--transition-ease);
+    }
+
+    footer .footer-right {
+      font-size: 0.6rem; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--muted);
+      text-align: right; line-height: 2.2;
+      transition: color var(--transition-duration) var(--transition-ease);
+    }
+
+    footer .footer-right a {
+      color: var(--muted); text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    footer .footer-right a:hover { color: var(--accent); }
+
+    /* ── REVEAL ── */
+    .reveal {
+      opacity: 0; transform: translateY(24px);
+      transition: opacity 0.9s ease, transform 0.9s ease;
+    }
+
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ═══════════════════════════════════════════════
+       CINEMATIC INFLUENCE SYSTEMS
+       Two equally authored realities.
+       Archive = memory, preservation, humanity, composition
+       Shrine = signal, becoming, subconscious, immersion
+       ═══════════════════════════════════════════════ */
+
+    /* ── ARCHIVE: monumental warmth, manuscript glow, composed humanity ── */
+    body.archive .hero-center h1 {
+      text-shadow: 0 0 80px rgba(210,195,170,0.2);
+    }
+
+    body.archive .hero-bg-word {
+      animation: archiveDrift 35s ease-in-out infinite alternate;
+    }
+
+    @keyframes archiveDrift {
+      0% { transform: translateX(0) translateY(0); }
+      50% { transform: translateX(-12px) translateY(5px); }
+      100% { transform: translateX(8px) translateY(-3px); }
+    }
+
+    body.archive .art-word {
+      animation: archiveArtDrift 22s ease-in-out infinite alternate;
+      text-shadow: 0 0 50px rgba(22,184,243,0.08);
+    }
+
+    @keyframes archiveArtDrift {
+      0% { transform: translateX(0); }
+      50% { transform: translateX(8px) translateY(-2px); }
+      100% { transform: translateX(-5px) translateY(3px); }
+    }
+
+    /* ── SHRINE: fragmented signal, nocturnal drift, ritual glow ── */
+    body.shrine .hero-center h1 {
+      font-size: clamp(3.5rem, 9vw, 8rem);
+      letter-spacing: -0.03em;
+      line-height: 1.02;
+      text-shadow:
+        0 0 60px rgba(196,52,47,0.12),
+        0 0 120px rgba(196,52,47,0.04);
+    }
+
+    body.shrine .hero-bg-word {
+      animation: shrineDrift 25s ease-in-out infinite alternate;
+    }
+
+    @keyframes shrineDrift {
+      0% { transform: translateX(0) translateY(0); }
+      33% { transform: translateX(-20px) translateY(8px); }
+      66% { transform: translateX(-35px) translateY(-5px); }
+      100% { transform: translateX(-15px) translateY(12px); }
+    }
+
+    body.shrine .art-word {
+      animation: shrineArtDrift 18s ease-in-out infinite alternate;
+      text-shadow: 0 0 40px rgba(196,52,47,0.08);
+    }
+
+    @keyframes shrineArtDrift {
+      0% { transform: translateX(0) translateY(0); }
+      50% { transform: translateX(-12px) translateY(3px); }
+      100% { transform: translateX(5px) translateY(-2px); }
+    }
+
+    /* ── CINEMATIC BREAK OVERLAYS — equally cinematic, different temperature ── */
+    body.archive .cinematic-break .overlay {
+      background: linear-gradient(
+        to bottom,
+        var(--overlay-top) 0%,
+        rgba(245,240,232,0.3) 15%,
+        transparent 30%,
+        transparent 70%,
+        rgba(245,240,232,0.3) 85%,
+        var(--overlay-top) 100%
+      );
+    }
+
+    body.shrine .cinematic-break .overlay {
+      background: linear-gradient(
+        to bottom,
+        var(--overlay-top) 0%,
+        rgba(10,8,7,0.4) 18%,
+        rgba(10,8,7,0.1) 35%,
+        rgba(10,8,7,0.1) 65%,
+        rgba(10,8,7,0.4) 82%,
+        var(--overlay-top) 100%
+      );
+    }
+
+    body.archive .cinematic-break .caption {
+      letter-spacing: 0.02em;
+      text-shadow: 0 0 60px rgba(210,195,170,0.3), 0 2px 30px rgba(0,0,0,0.3);
+    }
+
+    body.shrine .cinematic-break .caption {
+      letter-spacing: 0.06em;
+      text-shadow: 0 0 40px rgba(196,52,47,0.15), 0 2px 30px rgba(0,0,0,0.5);
+    }
+
+    /* ── PHILOSOPHY — both modes get atmosphere ── */
+    body.archive .philosophy .big-text {
+      text-shadow: 0 0 80px rgba(22,184,243,0.06);
+    }
+
+    body.shrine .philosophy .big-text {
+      text-shadow: 0 0 80px rgba(196,52,47,0.06);
+    }
+
+    /* ── SKILLS GRID — equally intentional hover states ── */
+    body.archive .skill-cell:hover {
+      box-shadow: inset 0 0 30px rgba(22,184,243,0.04);
+    }
+
+    body.shrine .skill-cell:hover {
+      box-shadow: inset 0 0 30px rgba(196,52,47,0.04);
+    }
+
+    /* ── GALLERY — different hover character, equal quality ── */
+    body.archive .gallery-grid img:hover {
+      transform: scale(1.02);
+      filter: contrast(1.03) saturate(1.05);
+    }
+
+    body.shrine .gallery-grid img:hover {
+      transform: scale(1.02);
+      filter: saturate(1.1) contrast(1.05);
+    }
+
+    /* ── HERO FLOATING IMAGES — Archive warm, Shrine vivid. Both authored. ── */
+    body.archive .hero-float-img {
+      box-shadow: 0 0 30px rgba(210,195,170,0.1);
+    }
+
+    body.shrine .hero-float-img {
+      box-shadow: 0 0 30px rgba(196,52,47,0.06);
+    }
+
+    /* ── ART SEQUENCE VISUALS — both get cinematic treatment ── */
+    body.archive .art-visual-layer img {
+      box-shadow: 0 0 40px rgba(210,195,170,0.12);
+    }
+
+    body.shrine .art-visual-layer img {
+      box-shadow: 0 0 40px rgba(196,52,47,0.08);
+    }
+
+    /* ── FOOTER — both get glow on links ── */
+    body.archive footer .footer-left a {
+      text-shadow: 0 0 20px rgba(22,184,243,0.12);
+    }
+
+    body.shrine footer .footer-left a {
+      text-shadow: 0 0 20px rgba(196,52,47,0.15);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 1.2rem 1.5rem; }
+      nav .nav-links { gap: 1rem; }
+      nav .nav-links a { font-size: 0.55rem; }
+
+      .hero-float-img { display: none; }
+      .hero-center h1 { font-size: clamp(2.5rem, 10vw, 4rem) !important; }
+
+      .art-sequence { height: 300vh; }
+      .art-sequence-visuals { display: none; }
+      .art-sequence-content { max-width: 100%; }
+
+      .skills-section, .inspirations, .expression { padding-left: 1.5rem; padding-right: 1.5rem; }
+
+      .skills-grid { grid-template-columns: repeat(2, 1fr); }
+      .skill-cell { border-bottom: 1px solid var(--border); }
+      .skill-cell:nth-child(2n) { border-right: none; }
+
+      .inspiration-item { grid-template-columns: 40px 1fr; gap: 1.5rem; }
+      .inspiration-number { font-size: 1.8rem; }
+      .inspiration-content h3 { font-size: 1.3rem; }
+
+      .cinematic-break { height: 50vh; }
+
+      .gallery-grid { columns: 2; padding: 0 1.5rem; column-gap: 6px; }
+
+      .reality-toggle { bottom: 1.2rem; right: 1.2rem; }
+
+      footer {
+        flex-direction: column; align-items: flex-start;
+        gap: 2rem; padding-left: 1.5rem; padding-right: 1.5rem;
+      }
+
+      footer .footer-right { text-align: left; }
+    }
+  </style>
+</head>
+<body class="archive">
+
+  <div class="grain"></div>
+  <div class="atmosphere atmosphere-fog"></div>
+  <div class="atmosphere atmosphere-glow"></div>
+  <div class="atmosphere atmosphere-scanlines"></div>
+  <div class="atmosphere atmosphere-horizon"></div>
+  <div class="transition-veil" id="transitionVeil"></div>
+
+  <!-- ═══ CONSCIOUSNESS TOGGLE (double-click hint) ═══ -->
+  <div class="reality-hint" id="realityHint"></div>
+
+  <!-- ═══ NAV ═══ -->
+  <nav>
+    <div class="logo">dreamlike</div>
+    <ul class="nav-links">
+      <li><a href="#art">Art</a></li>
+      <li><a href="#craft">Craft</a></li>
+      <li><a href="#north-stars">North Stars</a></li>
+      <li><a href="#gallery">Work</a></li>
+      <li><a href="#expression">Expression</a></li>
+    </ul>
+  </nav>
+
+  <!-- ═══════════════ HERO ═══════════════ -->
+  <section class="hero">
+    <div class="hero-sticky">
+      <!-- Ghost words — different per reality -->
+      <div class="hero-bg-word top archive-word" data-parallax-speed="0.15">creation</div>
+      <div class="hero-bg-word bottom archive-word" data-parallax-speed="-0.1">devotion</div>
+      <div class="hero-bg-word top shrine-word" data-parallax-speed="0.15">signal</div>
+      <div class="hero-bg-word bottom shrine-word" data-parallax-speed="-0.1">becoming</div>
+
+      <!-- ARCHIVE: rebar/clouds, palm sunset, lakeside portrait, tree canopy, rain glass, Hawa Mahal -->
+      <img class="hero-float-img f1 for-archive" data-parallax-speed="0.3" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/posts/202506/18068890202076906.jpg" alt="" onload="this.classList.add('loaded')">
+      <img class="hero-float-img f2 for-archive" data-parallax-speed="-0.2" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/posts/202604/18017051879832195.jpg" alt="" onload="this.classList.add('loaded')">
+      <img class="hero-float-img f3 for-archive" data-parallax-speed="0.25" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/archived_posts/202508/18383852299192694.jpg" alt="" onload="this.classList.add('loaded')">
+      <img class="hero-float-img f4 for-archive" data-parallax-speed="-0.35" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/archived_posts/202604/18117928084646110.jpg" alt="" onload="this.classList.add('loaded')">
+      <img class="hero-float-img f5 for-archive" data-parallax-speed="0.18" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/posts/202508/18024455411524738.jpg" alt="" onload="this.classList.add('loaded')">
+      <img class="hero-float-img f6 for-archive" data-parallax-speed="-0.22" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/archived_posts/202507/18034149500438188.jpg" alt="" onload="this.classList.add('loaded')">
+
+      <!-- SHRINE: crimson eye, moon halo, sun burst, butterfly collage, pink star, orange moon -->
+      <img class="hero-float-img f1 for-shrine" data-parallax-speed="0.3" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/archived_posts/202602/17859601911600945.jpg" alt="" onload="this.classList.add('loaded')">
+      <img class="hero-float-img f2 for-shrine" data-parallax-speed="-0.2" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/posts/202510/18084284740757996.jpg" alt="" onload="this.classList.add('loaded')">
+      <img class="hero-float-img f3 for-shrine" data-parallax-speed="0.25" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/posts/202601/17866631820459316.jpg" alt="" onload="this.classList.add('loaded')">
+      <img class="hero-float-img f4 for-shrine" data-parallax-speed="-0.35" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/archived_posts/202508/18109873336536809.jpg" alt="" onload="this.classList.add('loaded')">
+      <img class="hero-float-img f5 for-shrine" data-parallax-speed="0.18" src="instagram-dreamlike2004-2026-05-17-XJ6PhdLO/media/posts/202510/18069589310054600.jpg" alt="" onload="this.classList.add('loaded')">
+      <img class="hero-float-img f6 for-shrine" data-parallax-speed="-0.22" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/stories/202601/17868371109533136.jpg" alt="" onload="this.classList.add('loaded')">
+
+      <div class="hero-vignette"></div>
+
+      <div class="hero-center" data-parallax-speed="-0.08">
+        <h1>your life is<br>an <em>art project</em></h1>
+        <p class="subtitle" style="margin-top: 1.5rem; font-family: var(--serif); font-style: italic; font-size: 0.85rem; letter-spacing: 0.05em; text-transform: none; color: var(--muted);">art is not to accept the world as given and filling it with something that didn't exist before.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ ART STICKY SEQUENCE ═══════════════ -->
+  <section class="art-sequence" id="art">
+    <div class="art-sequence-sticky">
+      <div class="art-sequence-content">
+        <div class="section-label">01 &mdash; what art means to me</div>
+        <div class="art-word" id="artWord">language</div>
+        <div class="art-text" id="artText">
+          art crosses borders and generations without needing translation.
+        </div>
+      </div>
+      <div class="art-sequence-visuals">
+        <!-- ARCHIVE: ink hand, mandala tiles, eye of providence, palm diptych -->
+        <div class="art-visual-layer for-archive active" data-step="0">
+          <img src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/posts/202509/17842360611586203.jpg" alt="">
+        </div>
+        <div class="art-visual-layer for-archive" data-step="1">
+          <img src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/posts/202601/18089238437045643.jpg" alt="">
+        </div>
+        <div class="art-visual-layer for-archive" data-step="2">
+          <img src="instagram-dreamlike2004-2026-05-17-XJ6PhdLO/media/posts/202510/17913520800208277.jpg" alt="">
+        </div>
+        <div class="art-visual-layer for-archive" data-step="3">
+          <img src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/posts/202601/18088649642044478.jpg" alt="">
+        </div>
+        <div class="art-visual-layer for-archive" data-step="4">
+          <img src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/posts/202506/18068890202076906.jpg" alt="">
+        </div>
+        <!-- SHRINE: thermal face, dog/sun, purple neon silhouette, orange moon, sun burst -->
+        <div class="art-visual-layer for-shrine active" data-step="0">
+          <img src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/posts/202602/18115186264719757.jpg" alt="">
+        </div>
+        <div class="art-visual-layer for-shrine" data-step="1">
+          <img src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/posts/202512/18027887522770576.jpg" alt="">
+        </div>
+        <div class="art-visual-layer for-shrine" data-step="2">
+          <img src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/stories/202512/18442554268129689.jpg" alt="">
+        </div>
+        <div class="art-visual-layer for-shrine" data-step="3">
+          <img src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/stories/202601/17868371109533136.jpg" alt="">
+        </div>
+        <div class="art-visual-layer for-shrine" data-step="4">
+          <img src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/posts/202601/17866631820459316.jpg" alt="">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ RECEIPTS ═══════════════ -->
+  <section style="padding: 5rem 3rem; max-width: 850px; margin: 0 auto;">
+    <div class="section-label reveal">02 &mdash; receipts</div>
+    <p class="art-reflection reveal" style="margin-top: 0;">
+      i've been thinking this way publicly for months, before this brief existed.
+    </p>
+    <blockquote class="reveal" style="font-family: var(--serif); font-size: clamp(1.1rem, 2.5vw, 1.5rem); line-height: 1.6; padding-left: 2rem; border-left: 2px solid var(--accent); margin-top: 2.5rem; color: var(--text); transition: color var(--transition-duration) var(--transition-ease), border-color var(--transition-duration) var(--transition-ease);">
+      <p style="margin-bottom: 1.5rem;"><a href="https://x.com/swapnilsdream/status/2048312733616288207" target="_blank" rel="noopener" style="color: var(--text); text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text)'">&ldquo;art is the only universal language.&rdquo;</a> <span style="font-family: var(--sans); font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-left: 0.5rem;">april 26</span></p>
+      <p style="margin-bottom: 1.5rem;"><a href="https://x.com/swapnilsdream/status/2046926848123388065" target="_blank" rel="noopener" style="color: var(--text); text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text)'">&ldquo;the way to be immortal is through creation.&rdquo;</a> <span style="font-family: var(--sans); font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-left: 0.5rem;">april 22</span></p>
+      <p style="margin-bottom: 1.5rem;"><a href="https://x.com/swapnilsdream/status/2044829108925083853" target="_blank" rel="noopener" style="color: var(--text); text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text)'">&ldquo;in creation, everything is just what feels good to you.&rdquo;</a> <span style="font-family: var(--sans); font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-left: 0.5rem;">april 16</span></p>
+      <p style="margin-bottom: 1.5rem;"><a href="https://x.com/swapnilsdream/status/2039826083164590239" target="_blank" rel="noopener" style="color: var(--text); text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text)'">&ldquo;art comes with pride. art comes from pain.&rdquo;</a> <span style="font-family: var(--sans); font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-left: 0.5rem;">april 2</span></p>
+      <p><a href="https://x.com/swapnilsdream/status/2038962238405660870" target="_blank" rel="noopener" style="color: var(--text); text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text)'">&ldquo;you consume art but save hustle.&rdquo;</a> <span style="font-family: var(--sans); font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-left: 0.5rem;">march 31</span></p>
+    </blockquote>
+    <p class="art-reflection reveal" style="margin-top: 2.5rem;">
+      this document unified what i was already working through. if you want to see how i think unfiltered: <a href="https://x.com/swapnilsdream" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: none;">@swapnilsdream</a>
+    </p>
+  </section>
+
+  <!-- ═══════════════ CINEMATIC BREAK 1 ═══════════════ -->
+  <div class="cinematic-break">
+    <img class="for-archive" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/posts/202601/18105701698682602.jpg" data-parallax-speed="0.15" alt="">
+    <img class="for-shrine" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/posts/202604/18118026106567148.jpg" data-parallax-speed="0.15" alt="">
+    <div class="overlay"></div>
+    <div class="caption reveal">the medium is never the identity. creation is</div>
+  </div>
+
+  <!-- ═══════════════ PHILOSOPHY ═══════════════ -->
+  <section class="philosophy">
+    <img class="bg-float left for-archive" data-parallax-speed="0.2" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/posts/202509/18069807055973075.jpg" alt="">
+    <img class="bg-float right for-archive" data-parallax-speed="-0.15" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/archived_posts/202601/17960226063042012.jpg" alt="">
+    <img class="bg-float left for-shrine" data-parallax-speed="0.2" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/archived_posts/202512/17870097453491938.jpg" alt="">
+    <img class="bg-float right for-shrine" data-parallax-speed="-0.15" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/posts/202509/18317898208215535.jpg" alt="">
+    <p class="big-text reveal" data-parallax-speed="-0.05">
+      i like to <em>create</em> things,<br>
+      strike <em>conversations</em>,<br>
+      and <em>illuminate</em> the world.
+    </p>
+  </section>
+
+  <div class="divider"></div>
+  <div class="divider-ornament"><span class="ornament-archive">&loz; &middot; &loz; &middot; &loz;</span><span class="ornament-shrine">&mdash; &bull; &mdash;</span></div>
+
+  <!-- ═══════════════ SKILLS ═══════════════ -->
+  <section class="skills-section" id="craft">
+    <div class="section-label reveal">03 &mdash; the craft</div>
+    <div class="skills-grid reveal">
+      <div class="skill-cell"><div class="skill-name">music</div><div class="skill-sub">production &middot; composition</div></div>
+      <div class="skill-cell"><div class="skill-name">film</div><div class="skill-sub">direction &middot; editing &middot; color grading</div></div>
+      <div class="skill-cell"><div class="skill-name">visual</div><div class="skill-sub">design &middot; photography</div></div>
+      <div class="skill-cell"><div class="skill-name">writing</div><div class="skill-sub">essays &middot; philosophy</div></div>
+      <div class="skill-cell"><div class="skill-name">code</div><div class="skill-sub">web &middot; product &middot; tech</div></div>
+      <div class="skill-cell"><div class="skill-name">fashion</div><div class="skill-sub">modeling &middot; styling</div></div>
+    </div>
+    <p class="art-reflection reveal">
+      these aren't separate. they're the same skill applied to different problems. <strong>the idea picks the medium.</strong>
+    </p>
+    <p class="art-reflection reveal" style="margin-top: 1.5rem;">
+      you can nail the visuals and lose half the impact if the sound is generic. great work demands every element justify itself. <strong>if it's not pulling weight, cut it.</strong>
+    </p>
+  </section>
+
+  <!-- ═══════════════ CINEMATIC BREAK 2 ═══════════════ -->
+  <div class="cinematic-break">
+    <img class="for-archive" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/archived_posts/202507/18034149500438188.jpg" data-parallax-speed="0.12" alt="">
+    <img class="for-shrine" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/posts/202506/17933092163935117.jpg" data-parallax-speed="0.12" alt="">
+    <div class="overlay"></div>
+    <div class="caption reveal">the idea chooses its medium</div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="divider-ornament"><span class="ornament-archive">&loz; &middot; &loz; &middot; &loz;</span><span class="ornament-shrine">&mdash; &bull; &mdash;</span></div>
+
+  <!-- ═══════════════ INSPIRATIONS ═══════════════ -->
+  <section class="inspirations" id="north-stars">
+    <div class="section-label reveal">04 &mdash; north stars</div>
+    <p class="art-reflection reveal" style="margin-bottom: 3rem;">
+      five people whose work i study and pull from.
+    </p>
+
+    <div class="inspiration-item reveal">
+      <div class="inspiration-number">01</div>
+      <div class="inspiration-content">
+        <h3>apple design films</h3>
+        <div class="inspiration-role"><a href="https://www.youtube.com/@Apple" target="_blank" rel="noopener">product launches</a></div>
+        <p class="inspiration-text">what i take: <strong>saying less to communicate more</strong>.</p>
+        <p class="inspiration-blend">what i'd use: if it needs explaining, the visuals failed.</p>
+      </div>
+    </div>
+
+    <div class="inspiration-item reveal">
+      <div class="inspiration-number">02</div>
+      <div class="inspiration-content">
+        <h3>christopher nolan</h3>
+        <div class="inspiration-role"><a href="https://film-grab.com/2012/11/23/inception/" target="_blank" rel="noopener">inception</a>, <a href="https://film-grab.com/2015/04/17/interstellar/" target="_blank" rel="noopener">interstellar</a>, <a href="https://film-grab.com/2010/10/02/the-dark-knight/" target="_blank" rel="noopener">the dark knight</a></div>
+        <p class="inspiration-text">what i take: <strong>using pacing to control attention</strong>.</p>
+        <p class="inspiration-blend">what i'd use: let the cuts carry the emotion, not the music.</p>
+      </div>
+    </div>
+
+    <div class="inspiration-item reveal">
+      <div class="inspiration-number">03</div>
+      <div class="inspiration-content">
+        <h3>denis villeneuve</h3>
+        <div class="inspiration-role"><a href="https://film-grab.com/2024/04/08/dune-part-2/" target="_blank" rel="noopener">dune</a>, <a href="https://film-grab.com/2019/05/24/blade-runner-2049/" target="_blank" rel="noopener">blade runner 2049</a>, <a href="https://film-grab.com/2019/06/28/arrival/" target="_blank" rel="noopener">arrival</a></div>
+        <p class="inspiration-text">what i take: <strong>making environment do the storytelling</strong>.</p>
+        <p class="inspiration-blend">what i'd use: negative space is content, not filler.</p>
+      </div>
+    </div>
+
+    <div class="inspiration-item reveal">
+      <div class="inspiration-number">04</div>
+      <div class="inspiration-content">
+        <h3>joaquim dos santos</h3>
+        <div class="inspiration-role"><a href="https://film-grab.com/2023/12/11/spider-man-across-the-spider-verse/" target="_blank" rel="noopener">spider-man: across the spider-verse</a></div>
+        <p class="inspiration-text">what i take: <strong>using visual inconsistency as a storytelling tool</strong>.</p>
+        <p class="inspiration-blend">what i'd use: style shifts as information, not decoration.</p>
+      </div>
+    </div>
+
+    <div class="inspiration-item reveal">
+      <div class="inspiration-number">05</div>
+      <div class="inspiration-content">
+        <h3>robert valley</h3>
+        <div class="inspiration-role"><a href="https://www.behance.net/gallery/78214495/ZIMA-BLUE-Robots-animations" target="_blank" rel="noopener">"zima blue"</a></div>
+        <p class="inspiration-text">what i take: <strong>knowing what to remove</strong>.</p>
+        <p class="inspiration-blend">what i'd use: if removing it doesn't hurt, it shouldn't be there.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ CINEMATIC BREAK 3 ═══════════════ -->
+  <div class="cinematic-break">
+    <img class="for-archive" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/archived_posts/202506/17854789584459757.jpg" data-parallax-speed="0.1" alt="">
+    <img class="for-shrine" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/archived_posts/202603/18082971206218845.jpg" data-parallax-speed="0.1" alt="">
+    <div class="overlay"></div>
+    <div class="caption reveal">experiencing and evolving</div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="divider-ornament"><span class="ornament-archive">&loz; &middot; &loz; &middot; &loz;</span><span class="ornament-shrine">&mdash; &bull; &mdash;</span></div>
+
+  <!-- ═══════════════ GALLERY ═══════════════ -->
+  <div class="gallery-section" id="gallery">
+    <div class="section-label reveal" style="max-width:1100px;margin:0 auto 2rem;padding:0 3rem;">05 &mdash; the work</div>
+    <div class="gallery-grid">
+      <!-- ARCHIVE: preserved memory, daylight, humanity, composition -->
+      <img class="for-archive" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/posts/202601/18088649642044478.jpg" loading="lazy" alt="">
+      <img class="for-archive" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/posts/202508/18024455411524738.jpg" loading="lazy" alt="">
+      <img class="for-archive" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/posts/202603/18176175235352884.jpg" loading="lazy" alt="">
+      <img class="for-archive" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/posts/202601/18089238437045643.jpg" loading="lazy" alt="">
+      <img class="for-archive" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/posts/202509/17842360611586203.jpg" loading="lazy" alt="">
+      <img class="for-archive" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/other/202601/17922969156217229.jpg" loading="lazy" alt="">
+      <img class="for-archive" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/archived_posts/202509/17972464994937493.jpg" loading="lazy" alt="">
+      <img class="for-archive" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/posts/202506/18068890202076906.jpg" loading="lazy" alt="">
+      <img class="for-archive" src="instagram-dreamlike2004-2026-05-17-XJ6PhdLO/media/posts/202510/17913520800208277.jpg" loading="lazy" alt="">
+      <img class="for-archive" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/posts/202509/18069807055973075.jpg" loading="lazy" alt="">
+      <img class="for-archive" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/posts/202604/18017051879832195.jpg" loading="lazy" alt="">
+      <img class="for-archive" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/archived_posts/202601/17960226063042012.jpg" loading="lazy" alt="">
+      <!-- SHRINE: nocturnal signal, fragmentation, ritual, sacred darkness -->
+      <img class="for-shrine" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/posts/202510/18072223883210676.jpg" loading="lazy" alt="">
+      <img class="for-shrine" src="instagram-dreamlike2004-2026-05-17-XJ6PhdLO/media/posts/202510/18069589310054600.jpg" loading="lazy" alt="">
+      <img class="for-shrine" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/archived_posts/202509/18041502098422653.jpg" loading="lazy" alt="">
+      <img class="for-shrine" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/posts/202510/18084284740757996.jpg" loading="lazy" alt="">
+      <img class="for-shrine" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/posts/202512/18027887522770576.jpg" loading="lazy" alt="">
+      <img class="for-shrine" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/posts/202601/17866631820459316.jpg" loading="lazy" alt="">
+      <img class="for-shrine" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/posts/202603/17894119740421870.jpg" loading="lazy" alt="">
+      <img class="for-shrine" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/posts/202509/18317898208215535.jpg" loading="lazy" alt="">
+      <img class="for-shrine" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/posts/202602/18115186264719757.jpg" loading="lazy" alt="">
+      <img class="for-shrine" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/archived_posts/202602/17859601911600945.jpg" loading="lazy" alt="">
+      <img class="for-shrine" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/posts/202604/18118026106567148.jpg" loading="lazy" alt="">
+      <img class="for-shrine" src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/posts/202506/17933092163935117.jpg" loading="lazy" alt="">
+      <!-- SHARED: bridge images — work in both realities -->
+      <img src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/archived_posts/202507/17858684865450236.jpg" loading="lazy" alt="">
+      <img src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/archived_posts/202508/17890793721311868.jpg" loading="lazy" alt="">
+      <img src="instagram-dreamlike2004-2026-05-17-hnbQvUUT/media/archived_posts/202510/18070083947210206.jpg" loading="lazy" alt="">
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="divider-ornament"><span class="ornament-archive">&loz; &middot; &loz; &middot; &loz;</span><span class="ornament-shrine">&mdash; &bull; &mdash;</span></div>
+
+  <!-- ═══════════════ EXPRESSION ═══════════════ -->
+  <section class="expression" id="expression">
+    <div class="section-label reveal">06 &mdash; the expression</div>
+    <div class="video-container reveal">
+      <span class="placeholder-text">your video here</span>
+    </div>
+  </section>
+
+  <!-- ═══ SPOTIFY FLOATING PLAYER ═══ -->
+  <div style="position: fixed; bottom: 2rem; left: 2rem; width: 300px; z-index: 10000; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.3);">
+    <iframe style="border-radius: 12px; border: none; display: block;" src="https://open.spotify.com/embed/track/303ccTay2FiDTZ9fZ2AdBt?utm_source=generator&theme=0" width="100%" height="80" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer>
+    <div class="footer-left reveal"><a href="https://dreamlike2004.cargo.site/" target="_blank" rel="noopener">dreamlike</a></div>
+    <div class="footer-right reveal">
+      <a href="https://www.instagram.com/dreamlike2004/" target="_blank" rel="noopener">Instagram</a><br>
+      <a href="https://x.com/swapnilsdream" target="_blank" rel="noopener">X / Twitter</a><br>
+      <a href="https://www.youtube.com/@dreamlike2004" target="_blank" rel="noopener">YouTube</a><br>
+      <a href="https://open.spotify.com/artist/4SFywPaV7leLqjXNbbd2dC" target="_blank" rel="noopener">Spotify</a><br>
+      <a href="https://music.apple.com/in/artist/dreamlike2004/1865509463" target="_blank" rel="noopener">Apple Music</a><br>
+      <a href="https://soundcloud.com/dreamlike-700729422" target="_blank" rel="noopener">SoundCloud</a><br>
+      <a href="https://substack.com/@dreamlike2004" target="_blank" rel="noopener">Substack</a><br>
+      Bangalore, India
+    </div>
+  </footer>
+  <div style="height: 4rem;"></div>
+
+  <!-- ═══════════════ SCRIPTS ═══════════════ -->
+  <script>
+    // ── CONSCIOUSNESS TOGGLE (double-click anywhere) ──
+    const body = document.body;
+    const veil = document.getElementById('transitionVeil');
+    const hint = document.getElementById('realityHint');
+    let transitioning = false;
+
+    // Hint follows cursor
+    document.addEventListener('mousemove', (e) => {
+      hint.style.left = e.clientX + 'px';
+      hint.style.top = e.clientY + 'px';
+    });
+
+    function toggleReality() {
+      if (transitioning) return;
+      transitioning = true;
+
+      veil.classList.add('active');
+
+      setTimeout(() => {
+        if (body.classList.contains('archive')) {
+          body.classList.remove('archive');
+          body.classList.add('shrine');
+        } else {
+          body.classList.remove('shrine');
+          body.classList.add('archive');
+        }
+        updateArtSequence();
+      }, 600);
+
+      setTimeout(() => {
+        veil.classList.remove('active');
+        transitioning = false;
+      }, 1200);
+    }
+
+    // Desktop: double-click
+    document.addEventListener('dblclick', (e) => {
+      if (e.target.closest('a, button, iframe, nav, .gallery-grid img')) return;
+      toggleReality();
+    });
+
+    // Mobile: double-tap
+    let lastTap = 0;
+    document.addEventListener('touchend', (e) => {
+      if (e.target.closest('a, button, iframe, nav, .gallery-grid img')) return;
+      const now = Date.now();
+      if (now - lastTap < 400) {
+        e.preventDefault();
+        toggleReality();
+      }
+      lastTap = now;
+    });
+
+    // ── REVEAL ON SCROLL ──
+    const revealObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+    // ── PARALLAX ENGINE ──
+    const parallaxEls = document.querySelectorAll('[data-parallax-speed]');
+
+    function updateParallax() {
+      const scrollY = window.scrollY;
+      parallaxEls.forEach(el => {
+        const speed = parseFloat(el.dataset.parallaxSpeed);
+        const parent = el.closest('section, .cinematic-break, .philosophy, .hero-sticky');
+        if (!parent) return;
+        const rect = parent.getBoundingClientRect();
+        const offset = (window.innerHeight - rect.top) * speed;
+        el.style.transform = `translateY(${offset}px)`;
+      });
+    }
+
+    // ── ART STICKY SEQUENCE ──
+    const artSection = document.querySelector('.art-sequence');
+    const artWord = document.getElementById('artWord');
+    const artText = document.getElementById('artText');
+
+    const artSteps = [
+      { word: 'language', text: 'art crosses borders and generations without needing translation.' },
+      { word: 'legacy', text: 'the way to be immortal is through creation. not titles or metrics &mdash; just making something that outlives the moment.' },
+      { word: 'intuition', text: 'in creation, everything is what feels right to you. no external validation. if it doesn\'t feel done, it\'s not.' },
+      { word: 'cost', text: 'art comes from pain and pride. the best work carries both &mdash; what broke you and what you built anyway.' },
+      { word: 'posture', text: 'i used to consume. now i want to build. that\'s the difference that matters to me.' }
+    ];
+
+    function updateArtSequence() {
+      if (!artSection) return;
+      const rect = artSection.getBoundingClientRect();
+      const totalScroll = artSection.offsetHeight - window.innerHeight;
+      const progress = Math.max(0, Math.min(1, -rect.top / totalScroll));
+      const stepIndex = Math.min(artSteps.length - 1, Math.floor(progress * artSteps.length));
+
+      artWord.textContent = artSteps[stepIndex].word;
+      artText.innerHTML = artSteps[stepIndex].text;
+
+      // Get current reality
+      const reality = body.classList.contains('shrine') ? 'shrine' : 'archive';
+      const layers = document.querySelectorAll(`.art-visual-layer.for-${reality}`);
+      layers.forEach((layer, i) => {
+        layer.classList.toggle('active', i === stepIndex);
+        const layerOffset = (progress - i / artSteps.length) * 60;
+        layer.style.transform = `translateY(${layerOffset}px)`;
+      });
+    }
+
+    // ── CINEMATIC BREAK PARALLAX ──
+    function updateCinematic() {
+      document.querySelectorAll('.cinematic-break').forEach(container => {
+        const rect = container.getBoundingClientRect();
+        const viewH = window.innerHeight;
+        if (rect.top > viewH || rect.bottom < 0) return;
+        const progress = (viewH - rect.top) / (viewH + rect.height);
+
+        container.querySelectorAll('img').forEach(img => {
+          const speed = parseFloat(img.dataset.parallaxSpeed) || 0.15;
+          const offset = (progress - 0.5) * viewH * speed;
+          img.style.transform = `translateY(${offset}px)`;
+        });
+      });
+    }
+
+    // ── RAF LOOP ──
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          updateParallax();
+          updateArtSequence();
+          updateCinematic();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+
+    updateParallax();
+    updateArtSequence();
+    updateCinematic();
+  </script>
+
+</body>
+</html>
