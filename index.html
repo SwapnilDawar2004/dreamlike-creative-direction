@@ -872,39 +872,97 @@
 
     /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
-      nav { padding: 1.2rem 1.5rem; }
-      nav .nav-links { gap: 1rem; }
-      nav .nav-links a { font-size: 0.55rem; }
+      /* Nav — hamburger-free, just tighter */
+      nav { padding: 1rem 1.2rem; }
+      nav .logo { font-size: 1rem; }
+      nav .nav-links { gap: 0.8rem; }
+      nav .nav-links a { font-size: 0.5rem; letter-spacing: 0.1em; }
 
+      /* Hero — no floating images, tighter type */
+      .hero { height: 180vh; }
       .hero-float-img { display: none; }
-      .hero-center h1 { font-size: clamp(2.5rem, 10vw, 4rem) !important; }
+      .hero-center h1 { font-size: clamp(2.2rem, 12vw, 3.5rem) !important; }
+      .hero-center .subtitle { font-size: 0.65rem !important; padding: 0 1rem; }
+      .hero-bg-word { font-size: clamp(6rem, 18vw, 10rem); }
 
-      .art-sequence { height: 300vh; }
+      /* Art sequence — shorter scroll, no visuals, full width text */
+      .art-sequence { height: 350vh; }
       .art-sequence-visuals { display: none; }
-      .art-sequence-content { max-width: 100%; }
+      .art-sequence-content { max-width: 100%; padding: 0 1.5rem; }
+      .art-sequence-content .art-word { font-size: clamp(2.5rem, 10vw, 4rem); }
+      .art-sequence-content .art-text { font-size: 0.9rem; }
 
-      .skills-section, .inspirations, .expression { padding-left: 1.5rem; padding-right: 1.5rem; }
+      /* Receipts */
+      section[style*="max-width: 850px"] { padding: 3rem 1.5rem !important; }
 
+      /* Cinematic breaks — shorter on mobile */
+      .cinematic-break { height: 40vh; }
+      .cinematic-break .caption { font-size: clamp(1rem, 5vw, 1.5rem); padding: 0 1.5rem; }
+
+      /* Philosophy — less padding */
+      .philosophy { padding: 6rem 1.5rem; }
+      .philosophy .big-text { font-size: clamp(1.6rem, 7vw, 2.5rem); }
+      .philosophy .bg-float { display: none; }
+
+      /* Skills — 2 columns, tighter */
+      .skills-section { padding: 4rem 1.5rem; }
       .skills-grid { grid-template-columns: repeat(2, 1fr); }
-      .skill-cell { border-bottom: 1px solid var(--border); }
+      .skill-cell { padding: 2rem 1rem; border-bottom: 1px solid var(--border); }
       .skill-cell:nth-child(2n) { border-right: none; }
+      .skill-cell .skill-name { font-size: 1.2rem; }
+      .art-reflection { font-size: 0.85rem; margin-top: 2rem; }
 
-      .inspiration-item { grid-template-columns: 40px 1fr; gap: 1.5rem; }
-      .inspiration-number { font-size: 1.8rem; }
-      .inspiration-content h3 { font-size: 1.3rem; }
+      /* Inspirations — single column feel */
+      .inspirations { padding: 4rem 1.5rem; }
+      .inspiration-item { grid-template-columns: 30px 1fr; gap: 1rem; padding: 2rem 0; }
+      .inspiration-number { font-size: 1.5rem; }
+      .inspiration-content h3 { font-size: 1.1rem; }
+      .inspiration-text { font-size: 0.8rem; }
+      .inspiration-blend { font-size: 0.75rem; }
+      .inspiration-role { font-size: 0.55rem; }
 
-      .cinematic-break { height: 50vh; }
-
+      /* Gallery — 2 col */
       .gallery-grid { columns: 2; padding: 0 1.5rem; column-gap: 6px; }
+      .gallery-section { padding: 4rem 0 3rem; }
 
-      .reality-toggle { bottom: 1.2rem; right: 1.2rem; }
+      /* Expression */
+      .expression { padding: 4rem 1.5rem; }
 
+      /* Dividers */
+      .divider-ornament { font-size: 0.9rem; padding: 1rem 0; }
+
+      /* Footer */
       footer {
         flex-direction: column; align-items: flex-start;
-        gap: 2rem; padding-left: 1.5rem; padding-right: 1.5rem;
+        gap: 1.5rem; padding: 3rem 1.5rem 2rem;
       }
+      footer .footer-left { font-size: 1.2rem; }
+      footer .footer-right { text-align: left; font-size: 0.55rem; }
 
-      footer .footer-right { text-align: left; }
+      /* Audio player — bottom center on mobile */
+      #audioPlayer {
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        bottom: 1rem !important;
+        width: 200px !important;
+        height: 50px !important;
+      }
+      #audioPlayer img { width: 38px !important; height: 38px !important; }
+
+      /* Scroll indicator */
+      .scroll-indicator { bottom: 1.5rem; }
+
+      /* Section labels */
+      .section-label { font-size: 0.5rem; margin-bottom: 2rem; }
+    }
+
+    /* Small phones */
+    @media (max-width: 380px) {
+      nav .nav-links { gap: 0.5rem; }
+      nav .nav-links a { font-size: 0.45rem; }
+      .hero-center h1 { font-size: 2rem !important; }
+      .philosophy .big-text { font-size: 1.4rem; }
+      #audioPlayer { width: 180px !important; }
     }
   </style>
 </head>
