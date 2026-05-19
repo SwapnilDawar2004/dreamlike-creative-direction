@@ -180,22 +180,25 @@
       background: radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,0.3) 100%);
     }
 
-    /* ── CONSCIOUSNESS TOGGLE (cursor-following hint) ── */
+    /* ── CONSCIOUSNESS TOGGLE ── */
     .reality-hint {
       position: fixed;
+      bottom: 2rem;
+      right: 2rem;
       z-index: 200;
       font-family: var(--serif);
       font-size: 0.6rem;
       font-style: italic;
       letter-spacing: 0.08em;
       color: var(--muted);
-      opacity: 1;
+      opacity: 0.5;
       pointer-events: none;
       user-select: none;
       white-space: nowrap;
-      transform: translate(15px, 15px);
-      transition: color var(--transition-duration) var(--transition-ease);
+      transition: opacity 0.3s ease, color var(--transition-duration) var(--transition-ease);
     }
+
+    .reality-hint:hover { opacity: 1; }
 
     body.archive .reality-hint::after { content: 'double-click to enter the night'; }
     body.shrine .reality-hint::after { content: 'double-click to return to the day'; }
@@ -203,7 +206,7 @@
     @media (max-width: 768px) {
       body.archive .reality-hint::after { content: 'double-tap to enter the night'; }
       body.shrine .reality-hint::after { content: 'double-tap to return to the day'; }
-      .reality-hint { position: fixed; bottom: 1.5rem; right: 1.5rem; left: auto; top: auto; transform: none; opacity: 1; }
+      .reality-hint { bottom: 1.5rem; right: 1.5rem; opacity: 0.6; }
     }
 
     /* ── TRANSITION VEIL ── */
@@ -1394,12 +1397,6 @@
     const veil = document.getElementById('transitionVeil');
     const hint = document.getElementById('realityHint');
     let transitioning = false;
-
-    // Hint follows cursor
-    document.addEventListener('mousemove', (e) => {
-      hint.style.left = e.clientX + 'px';
-      hint.style.top = e.clientY + 'px';
-    });
 
     function toggleReality() {
       if (transitioning) return;
