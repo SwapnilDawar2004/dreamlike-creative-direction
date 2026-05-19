@@ -187,7 +187,7 @@
       right: 2rem;
       z-index: 200;
       font-family: var(--serif);
-      font-size: 0.85rem;
+      font-size: 0.75rem;
       font-style: italic;
       letter-spacing: 0.08em;
       color: var(--muted);
@@ -201,7 +201,9 @@
     .reality-hint:hover { opacity: 1; }
 
     body.archive .reality-hint::after { content: 'double-click to enter the night'; }
+    body.archive .reality-hint { color: var(--muted); }
     body.shrine .reality-hint::after { content: 'double-click to return to the day'; }
+    body.shrine .reality-hint { color: #a09888; }
 
     @media (max-width: 768px) {
       body.archive .reality-hint::after { content: 'double-tap to enter the night'; }
