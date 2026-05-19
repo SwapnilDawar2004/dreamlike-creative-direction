@@ -195,10 +195,28 @@
       pointer-events: none;
       user-select: none;
       white-space: nowrap;
-      transition: opacity 0.3s ease, color var(--transition-duration) var(--transition-ease);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: color var(--transition-duration) var(--transition-ease);
     }
 
-    .reality-hint:hover { opacity: 1; }
+    .reality-hint::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      animation: hintPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes hintPulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.8); opacity: 0.3; }
+    }
+
+    body.archive .reality-hint::before { background: #16b8f3; }
+    body.shrine .reality-hint::before { background: #c4342f; }
 
     body.archive .reality-hint::after { content: 'double-click to enter the night'; }
     body.archive .reality-hint { color: var(--muted); }
