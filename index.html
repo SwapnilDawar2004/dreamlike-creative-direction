@@ -192,13 +192,22 @@
       letter-spacing: 0.08em;
       color: var(--muted);
       opacity: 1;
-      pointer-events: none;
+      pointer-events: auto;
+      cursor: pointer;
       user-select: none;
       white-space: nowrap;
       display: flex;
       align-items: center;
       gap: 8px;
-      transition: color var(--transition-duration) var(--transition-ease);
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      transition: color var(--transition-duration) var(--transition-ease),
+        background 0.3s ease, border-color var(--transition-duration) var(--transition-ease);
+    }
+
+    .reality-hint:hover {
+      background: var(--border);
     }
 
     .reality-hint::before {
@@ -208,6 +217,11 @@
       border-radius: 50%;
       flex-shrink: 0;
       animation: hintPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes playPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.4); }
+      50% { box-shadow: 0 0 8px 3px rgba(22,184,243,0.3); }
     }
 
     @keyframes hintPulse {
@@ -635,11 +649,14 @@
     }
 
     .inspiration-role a {
-      color: #16b8f3; text-decoration: none;
-      transition: opacity 0.3s;
+      color: #16b8f3;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      text-decoration-color: rgba(22,184,243,0.3);
+      transition: text-decoration-color 0.3s, opacity 0.3s;
     }
 
-    .inspiration-role a:hover { opacity: 0.7; }
+    .inspiration-role a:hover { text-decoration-color: #16b8f3; opacity: 0.8; }
 
     .inspiration-text {
       font-size: 0.9rem; line-height: 1.8;
@@ -1287,10 +1304,11 @@
     position: fixed; bottom: 2rem; left: 2rem; z-index: 10000;
     width: 220px; height: 56px;
     background: #181818; border-radius: 28px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4), 0 0 15px rgba(22,184,243,0.12);
     display: flex; align-items: center; gap: 10px;
     padding: 6px 14px 6px 6px;
     cursor: grab; user-select: none;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
     font-family: var(--sans);
   ">
     <!-- Album art -->
@@ -1311,6 +1329,7 @@
       width: 28px; height: 28px; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       padding: 0; flex-shrink: 0;
+      animation: playPulse 2s ease-in-out infinite;
     ">
       <svg id="playIcon" width="10" height="12" viewBox="0 0 12 14" fill="#181818"><polygon points="2,0 12,7 2,14"/></svg>
       <svg id="pauseIcon" width="10" height="12" viewBox="0 0 10 14" fill="#181818" style="display:none;"><rect x="0" y="0" width="3" height="14"/><rect x="7" y="0" width="3" height="14"/></svg>
@@ -1418,6 +1437,12 @@
     const veil = document.getElementById('transitionVeil');
     const hint = document.getElementById('realityHint');
     let transitioning = false;
+
+    // Single click on hint toggles reality
+    hint.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleReality();
+    });
 
     function toggleReality() {
       if (transitioning) return;
